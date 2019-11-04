@@ -24,17 +24,21 @@
 Handle c_Slay;
 bool _bSlay[MAXPLAYERS + 1];
 
+#define DATA "1.0"
+
 public Plugin myinfo = 
 {
 	name = "SM Franug AutoSlay",
 	author = "Franc1sco franug",
 	description = "",
-	version = "0.1",
+	version = DATA,
 	url = "http://steamcommunity.com/id/franug"
 };
 
 public void OnPluginStart()
 {
+	CreateConVar("sm_franugautoslay_version", DATA, "", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
+	
 	c_Slay = RegClientCookie("franugASlay", "franugASlay", CookieAccess_Private);
 	
 	RegAdminCmd("sm_aslay", Command_Set, ADMFLAG_SLAY);
