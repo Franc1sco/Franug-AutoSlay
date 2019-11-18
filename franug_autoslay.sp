@@ -24,7 +24,7 @@
 Handle c_Slay;
 bool _bSlay[MAXPLAYERS + 1];
 
-#define DATA "1.0"
+#define DATA "1.1"
 
 public Plugin myinfo = 
 {
@@ -37,6 +37,8 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	LoadTranslations("common.phrases.txt");
+	
 	CreateConVar("sm_franugautoslay_version", DATA, "", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
 	
 	c_Slay = RegClientCookie("franugASlay", "franugASlay", CookieAccess_Private);
@@ -77,11 +79,6 @@ public Action Command_Set(int client, int args)
 	int target;
 	if((target = FindTarget(client, arg, true, true)) == -1)
 	{
-		#if defined ENGLISH
-		ReplyToCommand(client, "Player not found");
-		#else
-		ReplyToCommand(client, "Jugador no encontrado");
-		#endif
 		return Plugin_Handled; // Target not found...
 	}
 	if(_bSlay[target])
@@ -122,11 +119,6 @@ public Action Command_noSet(int client, int args)
 	int target;
 	if((target = FindTarget(client, arg, true, true)) == -1)
 	{
-		#if defined ENGLISH
-		ReplyToCommand(client, "Player not found");
-		#else
-		ReplyToCommand(client, "Jugador no encontrado");
-		#endif
 		return Plugin_Handled;
 	}
 	if(!_bSlay[target])
@@ -151,7 +143,7 @@ public Action Command_noSet(int client, int args)
 
 public Action PlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
 {
-	CreateTimer(2.0, Timer_CheckSlay, GetEventInt(event, "userid"), TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(3.0, Timer_CheckSlay, GetEventInt(event, "userid"), TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public Action Timer_CheckSlay(Handle timer, int id)
@@ -164,6 +156,13 @@ public Action Timer_CheckSlay(Handle timer, int id)
 	ForcePlayerSuicide(client);
 	_bSlay[client] = false;
 	SetClientCookie(client, c_Slay, "0");
+	
+	if(IsPlayerAlive(client)) // double check for a csgo issue where player dont die sometimes
+	{
+		int team = GetClientTeam(client);
+		ChangeClientTeam(client, 1);
+		ChangeClientTeam(client, team);
+	}
 	
 	#if defined ENGLISH
 	PrintToChatAll("[Franug-AutoSlay] %N has been slayed for a pending slay.", client);
