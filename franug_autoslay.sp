@@ -18,13 +18,18 @@
 #include <sourcemod>
 #include <sdktools>
 #include <clientprefs>
+#undef REQUIRE_PLUGIN
+#include <franug_deadgames>
+#define REQUIRE_PLUGIN
 
-#define ENGLISH // multi language pending to do
+
+//#define ENGLISH // multi language pending to do
 
 Handle c_Slay;
 bool _bSlay[MAXPLAYERS + 1];
+bool gp_bDeadGames;
 
-#define DATA "1.1"
+#define DATA "1.2"
 
 public Plugin myinfo = 
 {
@@ -47,11 +52,29 @@ public void OnPluginStart()
 	RegAdminCmd("sm_noaslay", Command_noSet, ADMFLAG_SLAY);
 	HookEvent("player_spawn", PlayerSpawn);
 
+	gp_bDeadGames = LibraryExists("franug_deadgames");
+	
 	for(int i = 1; i <= MaxClients; i++)
 		if(IsClientInGame(i) && AreClientCookiesCached(i))
 		{
 			OnClientCookiesCached(i);
 		}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "franug_deadgames"))
+	{
+		gp_bDeadGames = false;
+	}
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "franug_deadgames"))
+	{
+		gp_bDeadGames = true;
+	}
 }
 
 public void OnClientCookiesCached(int client)
@@ -143,7 +166,7 @@ public Action Command_noSet(int client, int args)
 
 public Action PlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
 {
-	CreateTimer(3.0, Timer_CheckSlay, GetEventInt(event, "userid"), TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(0.5, Timer_CheckSlay, GetEventInt(event, "userid"), TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public Action Timer_CheckSlay(Handle timer, int id)
@@ -153,6 +176,8 @@ public Action Timer_CheckSlay(Handle timer, int id)
 	if(!client || !IsClientInGame(client) || !_bSlay[client] || !IsPlayerAlive(client))
 		return;
 		
+	if (gp_bDeadGames && DeadGames_IsOnGame(client))return;
+	
 	ForcePlayerSuicide(client);
 	_bSlay[client] = false;
 	SetClientCookie(client, c_Slay, "0");
