@@ -18,18 +18,19 @@
 #include <sourcemod>
 #include <sdktools>
 #include <clientprefs>
+#include <colorvariables>
 #undef REQUIRE_PLUGIN
 #include <franug_deadgames>
 #define REQUIRE_PLUGIN
 
 
-//#define ENGLISH // multi language pending to do
+#define ENGLISH // multi language pending to do
 
 Handle c_Slay;
 bool _bSlay[MAXPLAYERS + 1];
 bool gp_bDeadGames;
 
-#define DATA "1.2"
+#define DATA "1.3"
 
 public Plugin myinfo = 
 {
@@ -90,9 +91,9 @@ public Action Command_Set(int client, int args)
 	if(args < 1) // Not enough parameters
 	{
 		#if defined ENGLISH
-		ReplyToCommand(client, "[SM] use: sm_aslay <#userid|name>");
+		CReplyToCommand(client, "{green}[Franug-AutoSlay]{lightgreen} use: sm_aslay <#userid|name>");
 		#else
-		ReplyToCommand(client, "[SM] usa: sm_aslay <#userid|name>");
+		CReplyToCommand(client, "{green}[Franug-AutoSlay]{lightgreen} usa: sm_aslay <#userid|name>");
 		#endif
 		return Plugin_Handled;
 	}
@@ -107,16 +108,16 @@ public Action Command_Set(int client, int args)
 	if(_bSlay[target])
 	{
 		#if defined ENGLISH
-		ReplyToCommand(client, "%N already have a pending slay", target);
+		CReplyToCommand(client, "{green}[Franug-AutoSlay]{lightgreen} %N already have a pending slay", target);
 		#else
-		ReplyToCommand(client, "%N ya tiene un autoslay pendiente", target);
+		CReplyToCommand(client, "{green}[Franug-AutoSlay]{lightgreen} %N ya tiene un autoslay pendiente", target);
 		#endif
 		return Plugin_Handled;
 	}
 	#if defined ENGLISH
-	ShowActivity2(client, "[Franug-AutoSlay] ", "%N will be slayed in the next spawn.", target);
+	CShowActivity2(client, "{green}[Franug-AutoSlay]{lightgreen} ", "{lightgreen}%N will be slayed in the next spawn.", target);
 	#else
-	ShowActivity2(client, "[Franug-AutoSlay] ", "%N será slayeado en su siguiente aparición.", target);
+	CShowActivity2(client, "{green}[Franug-AutoSlay]{lightgreen} ", "{lightgreen}%N será slayeado en su siguiente aparición.", target);
 	#endif
 	_bSlay[target] = true;
 	SetClientCookie(target, c_Slay, "1");
@@ -130,9 +131,9 @@ public Action Command_noSet(int client, int args)
 	if(args < 1) // Not enough parameters
 	{
 		#if defined ENGLISH
-		ReplyToCommand(client, "[SM] use: sm_noaslay <#userid|name>");
+		CReplyToCommand(client, "{green}[Franug-AutoSlay]{lightgreen} use: sm_noaslay <#userid|name>");
 		#else
-		ReplyToCommand(client, "[SM] usa: sm_noaslay <#userid|name>");
+		CReplyToCommand(client, "{green}[Franug-AutoSlay]{lightgreen} usa: sm_noaslay <#userid|name>");
 		#endif
 		return Plugin_Handled;
 	}
@@ -147,16 +148,16 @@ public Action Command_noSet(int client, int args)
 	if(!_bSlay[target])
 	{
 		#if defined ENGLISH
-		ReplyToCommand(client, "%N dont have a pending slay", target);
+		CReplyToCommand(client, "{green}[Franug-AutoSlay]{lightgreen} %N dont have a pending slay", target);
 		#else
-		ReplyToCommand(client, "%N no tiene un autoslay pendiente", target);
+		CReplyToCommand(client, "{green}[Franug-AutoSlay]{lightgreen} %N no tiene un autoslay pendiente", target);
 		#endif
 		return Plugin_Handled;
 	}
 	#if defined ENGLISH
-	ShowActivity2(client, "[Franug-AutoSlay] ", "%N will NOT be slayed in the next spawn.", target);
+	CShowActivity2(client, "{green}[Franug-AutoSlay]{lightgreen} ", "{lightgreen}%N will NOT be slayed in the next spawn.", target);
 	#else
-	ShowActivity2(client, "[Franug-AutoSlay] ", "%N NO será slayeado en su siguiente aparición.", target);
+	CShowActivity2(client, "{green}[Franug-AutoSlay]{lightgreen} ", "{lightgreen}%N NO será slayeado en su siguiente aparición.", target);
 	#endif
 	_bSlay[target] = false;
 	SetClientCookie(target, c_Slay, "0");
@@ -190,8 +191,8 @@ public Action Timer_CheckSlay(Handle timer, int id)
 	}
 	
 	#if defined ENGLISH
-	PrintToChatAll("[Franug-AutoSlay] %N has been slayed for a pending slay.", client);
+	CPrintToChatAll("{green}[Franug-AutoSlay]{lightgreen} %N has been slayed for a pending slay.", client);
 	#else
-	PrintToChatAll("[Franug-AutoSlay] %N ha sido slayeado porque tenia un slay pendiente.", client);
+	CPrintToChatAll("{green}[Franug-AutoSlay]{lightgreen} %N ha sido slayeado porque tenia un slay pendiente.", client);
 	#endif
 }
