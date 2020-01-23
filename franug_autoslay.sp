@@ -1,6 +1,6 @@
 /*  SM Franug AutoSlay
  *
- *  Copyright (C) 2019 Francisco 'Franc1sco' García
+ *  Copyright (C) 2019-2020 Francisco 'Franc1sco' García and Edyone
  * 
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -35,7 +35,7 @@ bool gp_bDeadGames;
 public Plugin myinfo = 
 {
 	name = "SM Franug AutoSlay",
-	author = "Franc1sco franug",
+	author = "Franc1sco franug and Edyone",
 	description = "",
 	version = DATA,
 	url = "http://steamcommunity.com/id/franug"
